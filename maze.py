@@ -39,23 +39,68 @@ class Enemy(GameSprite):
         if self.direction == 0:
             self.rect.x -= self.speed
         else:
-            self.rect.x += self.speed   
+            self.rect.x += self.speed 
+class Wall(sprite.Sprite):
+	def __init__(self, color_1, color_2, color_3, wall_x, wall_y, wall_width, wall_height):
+		super().__init__()
+		self.color = (color_1, color_2, color_3)
+		self.width = wall_width
+		self.height = wall_height
+
+		self.image = Surface((self.width, self.height))
+		self.image.fill(self.color)
+
+		self.rect = self.image.get_rect()
+		self.rect.x = wall_x
+		self.rect.y = wall_y
+	def draw_wall(self):
+		windows.blit(self.image, (self.rect.x, self.rect.y))
 player = Player("hero.png",5,win_height - 80,4) 
 cyborg = Enemy("cyborg.png",win_width - 80,280,2)
 finish = GameSprite("treasure.png",550,400,2)
+
+w1 = Wall(154, 205, 50, 100, 20, 450, 10)
+w2 = Wall(154, 205, 50, 100, 480, 350, 10)
+w3 = Wall(154, 205, 50, 100, 20, 10, 380)
+w4 = Wall(154, 205, 50, 190, 100, 10, 380)
+w5 = Wall(154, 205, 50, 280, 20, 10, 380)
+w6 = Wall(154, 205, 50, 370, 100, 10, 380)
+w7 = Wall(154, 205, 50, 460, 100, 10, 380)
+
+font.init()
+font1 = font.SysFont('Arial',70)
+win = font1.render('YOU WIN!', True, (255, 215, 0))
+lose = font1.render('YOU LOSE!', True, (180, 0, 0))
 game = True
 clock = time.Clock()
 fps = 60
+finishB = False
 while game:
-    for e in event.get():
-        if e.type == QUIT:
-            game = False
-    windows.blit(background,(0,0))
-    player.update()
-    cyborg.update()
-    player.reset()
-    cyborg.reset()
-    finish.reset()
-    display.update()
-    clock.tick(fps)
--*- coding: utf-8 -*-
+	for e in event.get():
+		if e.type == QUIT:
+			game = False
+	if not finishB:
+		windows.blit(background,(0,0))
+		player.update()
+		cyborg.update()
+		player.reset()
+		cyborg.reset()
+		finish.reset()
+		w1.draw_wall()
+		w2.draw_wall()
+		w3.draw_wall()
+		w4.draw_wall()
+		w5.draw_wall()
+		w6.draw_wall()
+		w7.draw_wall()
+		if sprite.collide_rect(player, finish):
+			finishB = True
+			windows.blit(win, (200,200))
+		if sprite.collide_rect(player, cyborg):
+			finishB = True
+			windows.blit(lose, (200,200))
+		if sprite.collide_rect(player, w1) or sprite.collide_rect(player, w2) or sprite.collide_rect(player, w3) or sprite.collide_rect(player, w4) or sprite.collide_rect(player, w5) or sprite.collide_rect(player, w6) or sprite.collide_rect(player, w7):
+			finishB = True
+			windows.blit(lose, (200,200))
+	display.update()
+	clock.tick(fps)
